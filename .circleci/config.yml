@@ -1,0 +1,27 @@
+version: 2.1
+jobs:
+  build:
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: large
+    steps:
+      - run: |
+          export PATH=~/bin:$PATH
+          sudo apt update
+          sudo apt install git aria2 python-is-python2 libncurses5 -y
+          sudo curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+          sudo chmod +x ~/bin/repo
+      - run: |
+          git config --global user.email "pranshu.goyal71@gmail.com"
+          git config --global user.name "Pranshu Goyal"
+      - run: |
+          mkdir potato
+          cd ~/potato
+          repo init --depth=1 --no-repo-verify -u https://github.com/PotatoProject/manifest -b frico_mr1-release -g default,-mips,-notdefault
+          git clone https://github.com/datnerdguy/local_manifest --depth 1 -b potato .repo/local_manifests
+          repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j8
+          . build/envsetup.sh
+          lunch potato_whyred-user
+          brunch whyred
+      - run: |
+          ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${VERSION} ./artifacts/
