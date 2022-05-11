@@ -1,5 +1,5 @@
-container:
-  image: arm_container
+arm_container:
+  image: jdk:latest
 
 check_task:
   node_modules_cache:
