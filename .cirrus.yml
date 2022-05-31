@@ -1,9 +1,15 @@
-arm_container:
-  image: jdk:latest
-
-check_task:
-  node_modules_cache:
-    folder: node_modules
-    fingerprint_script: cat yarn.lock
-    populate_script: yarn install
-  test_script: yarn test
+env:
+    CIRRUS_CLONE_DEPTH: 1
+    CIRRUS_WORKING_DIR: "/tmp/ci"
+    CIRRUS_SHELL: bash
+    
+task:
+    name: whyred
+    timeout_in: 4h
+    container:
+      image: aarunalr/aosp-build
+      cpu: 8
+      memory: 32g
+    
+    bash_script:
+      - tmate
